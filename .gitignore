@@ -1,0 +1,8 @@
+.DS_Store
+.idea
+*.log
+tmp/
+.cpcache
+.clj-kondo/.cache
+.nrepl-port
+.lsp
