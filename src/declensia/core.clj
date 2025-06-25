@@ -4,13 +4,11 @@
 (defn regexp? [x]
   (instance? java.util.regex.Pattern x))
 
-
 (defn rule [id target replacement]
   {:id          id
    :type        :rule
    :target      target
    :replacement replacement})
-
 
 (def empty-rules
   {:uncountable '()
@@ -187,7 +185,9 @@
                        replacement)
           (recur (rest rules)))))))
 
-
+(defmulti singularize
+  "Returns the singularized noun."
+  identity)
 
 (defn inflect [word rules]
   (loop [rulesets (map rules [:uncountable :irregular :regular])]
@@ -201,10 +201,6 @@
 (defmethod pluralize :default
   [word]
   (inflect word *pluralize-rules*))
-
-(defmulti singularize
-  "Returns the singularized noun."
-  :none)
 
 (defmethod singularize :default
   [word]
