@@ -2,70 +2,41 @@
   (:require [declensia.core :as sut]
             [expectations.clojure.test :as e]))
 
-
-
 (def cases
-  [["bird" "birds"]
-   ["axis" "axes"]
-   #_["AXIS" "AXES"]
-   ["octopus" "octopi"]
-   ["virus" "viruses"]
-   ["bus" "buses"]
-   ["status" "statuses"]
-   ["man" "men"]
-   ["woman" "women"]
-   ["person" "people"]
-   ["sex" "sexes"]
-   ["child" "children"]
-   ["mouse" "mice"]
-   ["shoe" "shoes"]
-   ["crisis" "crises"]
-   ["alias" "aliases"]
-   ["zombie" "zombies"]
-   ["parenthesis" "parentheses"]
-   ["analysis" "analyses"]
-   "equipment"
-   "information"
-   "rice"
-   "money"
-   "species"
-   "series"
+  "Either a word that won't change, or a vector pair [singular, plural]"
+  ["equipment"
    "fish"
-   "sheep"
+   "information"
    "jeans"
+   "money"
    "police"
-   ["ox" "oxen"]
-   ["life" "lives"]
-   ["thief" "thieves"]
-   ["quiz" "quizzes"]
+   "rice"
+   "series"
+   "sheep"
+   "species"
    ["ability" "abilities"]
-   [:ability :abilities]
-   ['ability 'abilities]
    ["address" "addresses"]
-   ["address" "address"]
    ["agency" "agencies"]
    ["alias" "aliases"]
-   ["alias" "alias"]
+   ["alias" "aliases"]
    ["amenity" "amenities"]
    ["analysis" "analyses"]
-   ["analysis" "analysis"]
    ["archive" "archives"]
    ["axis" "axes"]
    ["basis" "bases"]
+   ["bird" "birds"]
    ["box" "boxes"]
    ["buffalo" "buffaloes"]
    ["bus" "buses"]
-   ["bus" "bus"]
    ["case" "cases"]
    ["category" "categories"]
+   ["child" "children"]
    ["comment" "comments"]
    ["crisis" "crises"]
-   ["crisis" "crisis"]
    ["database" "databases"]
    ["datum" "data"]
    ["day" "days"]
    ["diagnosis" "diagnoses"]
-   ["diagnosis" "diagnosis"]
    ["dwarf" "dwarves"]
    ["edge" "edges"]
    ["elf" "elves"]
@@ -76,7 +47,9 @@
    ["horse" "horses"]
    ["house" "houses"]
    ["index" "indices"]
+   ["life" "lives"]
    ["louse" "lice"]
+   ["man" "men"]
    ["matrix" "matrices"]
    ["medium" "media"]
    ["mouse" "mice"]
@@ -84,6 +57,8 @@
    ["newsletter" "newsletters"]
    ["octopus" "octopi"]
    ["ox" "oxen"]
+   ["parenthesis" "parentheses"]
+   ["person" "people"]
    ["perspective" "perspectives"]
    ["photo" "photos"]
    ["portfolio" "portfolios"]
@@ -91,19 +66,24 @@
    ["process" "processes"]
    ["query" "queries"]
    ["quiz" "quizzes"]
-   ["safe" "saves"]
    ["search" "searches"]
+   ["sex" "sexes"]
    ["shoe" "shoes"]
    ["stack" "stacks"]
    ["status" "statuses"]
    ["switch" "switches"]
    ["testis" "testes"]
+   ["thief" "thieves"]
    ["tomato" "tomatoes"]
    ["vertex" "vertices"]
+   ["virus" "viruses"]
+   ["weather" "weather"]
    ["wife" "wives"]
    ["wish" "wishes"]
-   ["weather" "weather"]])
-
+   ["woman" "women"]
+   ["zombie" "zombies"]
+   ['ability 'abilities]
+   [:ability :abilities]])
 
 (e/defexpect plural-singular-test
   (doseq [case cases]
@@ -117,5 +97,7 @@
                 (sut/singularize plural)
                 (str "Failed to singularize " plural)))))
 
-(let [word "octopus"]
-  [(sut/singularize (sut/pluralize word)) (sut/pluralize word)])
+(comment
+  (binding [sut/*debug* true]
+    (let [word "buses"]
+      (sut/singularize word))))
