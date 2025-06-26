@@ -73,7 +73,6 @@ so if you add general rules, they can override more broad rules.
 ;; Add irregular rules
 (add-rule :plural :irregular (rule "ox" "oxen"))
 (add-rule :singular :irregular (rule "oxen" "ox"))
-(add-rule :plural :irregular (rule "octopus" "octopi"))
 (add-rule :plural :irregular (rule "person" "people"))
 (add-rule :singular :irregular (rule "people" "person"))
 (add-rule :plural :irregular (rule "child" "children"))
@@ -195,7 +194,6 @@ so if you add general rules, they can override more broad rules.
     (rule #"(?i)([^aeiouy]|qu)y$" "$1ies")
     (rule #"(?i)(quer)y$" "$1ies")
     (rule #"(?i)(.*)us$" "$1uses")
-    (rule #"(?i)(octop)us$" "$1i")
     (rule #"(?i)(cris|test)(is|es)$" "$1es")
     (rule #"(?i)(database)s" "$1")
     (rule #"(?i)(qui)z$" "$1zzes")]]

@@ -57,7 +57,7 @@
    ["mouse" "mice"]
    ["movie" "movies"]
    ["newsletter" "newsletters"]
-   ["octopus" "octopi"]
+   ["octopus" "octopuses"]
    ["ox" "oxen"]
    ["parenthesis" "parentheses"]
    ["person" "people"]
