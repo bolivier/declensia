@@ -1,9 +1,14 @@
 # Declensia
 
+<img src="./logo.png" width="300">
+
 ## A library for pluralizing and singularizing
 
 The api is very simple. `declensia.core/pluralize` changes a singular to a
 plural, and `declensia.core/singularize` changes a plural to a singular.
+
+
+
 
 For now, there are no guarantees about what happens when you pass a singular word to `singularize`; same for `pluralize`.
 
