@@ -1,6 +1,7 @@
 (ns declensia.core-test
   (:require [declensia.core :as sut]
-            [expectations.clojure.test :as e]))
+            [expectations.clojure.test :as e])
+  (:import java.io.StringWriter))
 
 (def cases
   "Either a word that won't change, or a vector pair [singular, plural]"
@@ -96,6 +97,19 @@
       (e/expect singular
                 (sut/singularize plural)
                 (str "Failed to singularize " plural)))))
+
+(e/defexpect error-cases
+  (binding [*out* (StringWriter.)]
+    (sut/add-rule :singular :bad-type (sut/rule "hello" "hello"))
+    (e/expect ":bad-type is not a known ruleset. This rule will not be used.\n"
+              (str *out*)))
+
+
+
+  (try
+    (sut/add-rule :bad :uncountable (sut/rule "hello" "hello"))
+    (catch Exception e
+      (e/expect "Invalid ruleset for inflecting" (.getMessage e)))))
 
 (comment
   (binding [sut/*debug* true]

@@ -4,10 +4,26 @@
 (defn regexp? [x]
   (instance? java.util.regex.Pattern x))
 
-(defn rule [target replacement]
-  {:type        :rule
-   :target      target
+(def ^:dynamic *debug*
+  "Set this to true to print debug output about the match found for a particular word.
+
+   Note: you probably don't want to enable this. It's for debugging declensia."
+  false)
+
+(defn rule
+  "Create a replacement rule.
+
+  `target` can be a string or a regexp
+
+  `replacement` can be a string or a function taking the match from `target`. It
+  can also reference capture groups with \"$1\" (note: this will error without a
+  matching group)"
+  [target replacement]
+  {:target      target
    :replacement replacement})
+
+(def valid-ruleset?
+  #{:uncountable :irregular :regular})
 
 (def empty-rules
   {:uncountable '()
@@ -15,12 +31,29 @@
    :regular     '()})
 
 (def ^:dynamic *pluralize-rules*
+  "Rules for pluralizing words.
+
+  Prefer modifying this with `add-rule`, it manages precedent."
   empty-rules)
 
 (def ^:dynamic *singularize-rules*
+  "Rules for singularizing words.
+
+  Prefer modifying this with `add-rule`, it manages precedent."
   empty-rules)
 
 (defn add-rule
+  "Adds a new rule.  Rules are prepended to the existing rulesets,
+so if you add general rules, they can override more broad rules.
+
+  `number` is either `:singular` or `:plural`.
+
+  `rule-type` is one of
+    - `:uncountable` words that won't be transformed
+    - `:irregular` words that have some irregular shape and need precendence over regugular rules.
+    - `:regular` normal word rules.  Most of these use regexps and capture many cases.
+
+  `rule` is a rule created with `declensia.core/rule`"
   ([number rule]
    (add-rule number :regular rule))
   ([number rule-type rule]
@@ -30,8 +63,14 @@
                      (throw (ex-info "Invalid ruleset for inflecting"
                                      {:number number
                                       :rule   rule})))
-                   (fn [rules] (update rules rule-type #(cons rule %))))))
+                   (fn [rules]
+                     (when-not (valid-ruleset? rule-type)
+                       (println
+                         rule-type
+                         "is not a known ruleset. This rule will not be used."))
+                     (update rules rule-type #(cons rule %))))))
 
+;; Add irregular rules
 (add-rule :plural :irregular (rule "ox" "oxen"))
 (add-rule :singular :irregular (rule "oxen" "ox"))
 (add-rule :plural :irregular (rule "octopus" "octopi"))
@@ -42,9 +81,7 @@
 (add-rule :singular :irregular (rule #"(?i)(l|m)ice" "$1ouse"))
 (add-rule :plural :irregular (rule #"(?i)(l|m)ouse" "$1ice"))
 
-(defonce ^:dynamic *debug*
-  false)
-
+;; Add uncountable rules
 (doseq [w ["air"
            "alcohol"
            "art"
@@ -131,6 +168,7 @@
   (add-rule :singular :uncountable (rule w w))
   (add-rule :plural :uncountable (rule w w)))
 
+;; Add pluralizing rules
 (doseq
   [r
    [(rule #"$" "s")
@@ -154,6 +192,7 @@
     (rule #"(?i)(qui)z$" "$1zzes")]]
   (add-rule :plural r))
 
+;; Add singularizing rules
 (doseq
   [r
    [(rule #"s$" "")
@@ -187,30 +226,48 @@
   (add-rule :singular r))
 
 (defmulti pluralize
-  "Return the pluralized noun."
+  "Return the pluralized noun.
+
+  This multimethod dispatches on the identity of the word.  You can add a one-off replacement like this
+
+  (defmethod pluralize \"foobar\" [_]
+    \"foobarium\")"
   identity)
 
-(defn inflect-rule-type [word rules]
-  (loop [rules rules]
-    (when-let [rule (first rules)]
-      (let [{:keys [target replacement]} rule]
-        (if (or (= target word)
-                (and (regexp? target)
-                     (re-find target
-                              word)))
-          (do (when *debug*
-                    (println "using rule")
-                    (prn rule))
-              (str/replace word
-                           target
-                           replacement))
-          (recur (rest rules)))))))
+(defn inflect-rule-type
+  "This iterates over a single ruleset, either finding a match or returning nil."
+  [word ruleset]
+  (when-let [rule (first ruleset)]
+    (let [{:keys [target replacement]} rule]
+      (if (or (= target word)
+              (and (regexp? target)
+                   (re-find target
+                            word)))
+        (do (when *debug*
+                  (println "using rule")
+                  (prn rule))
+            (str/replace word
+                         target
+                         replacement))
+        (recur word
+               (rest ruleset))))))
 
 (defmulti singularize
-  "Returns the singularized noun."
+  "Returns the singularized noun.
+
+   This multimethod dispatches on the identity of the word.  You can add a one-off replacement like this
+
+  (defmethod pluralize \"foobaria\" [_]
+    \"foobar\")"
   identity)
 
-(defn inflect [word rules]
+(defn inflect
+  "Mechanism fn for creating singular and plurals.
+
+  This iterates over the rulesets in the rule groups, in order of most to least
+  specific. Uncountable words are considered first, then irregular, then
+  regular. "
+  [word rules]
   (let [serializer (cond
                      (string? word)  identity
                      (keyword? word) keyword
