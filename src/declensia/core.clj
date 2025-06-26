@@ -80,9 +80,18 @@ so if you add general rules, they can override more broad rules.
 (add-rule :singular :irregular (rule "children" "child"))
 (add-rule :singular :irregular (rule #"(?i)(l|m)ice" "$1ouse"))
 (add-rule :plural :irregular (rule #"(?i)(l|m)ouse" "$1ice"))
+(add-rule :singular :irregular (rule #"(?i)(phenomen|criteri)a" "$1on"))
+(add-rule :plural :irregular (rule #"(?i)(phenomen|criteri)on" "$1a"))
+(add-rule :plural
+          :irregular
+          (rule #"(?i)(alumn|syllab|nucle|fung|cact)us" "$1i"))
+(add-rule :singular
+          :irregular
+          (rule #"(?i)(alumn|syllab|nucle|fung|cact)i" "$1us"))
 
 ;; Add uncountable rules
 (doseq [w ["air"
+           "aircraft"
            "alcohol"
            "art"
            "blood"
@@ -179,7 +188,7 @@ so if you add general rules, they can override more broad rules.
     (rule #"(.*)fe?$" "$1ves")
     (rule #"(?i)(ax|test)is$" "$1es")
     (rule #"(?i)(x|ch|ss|sh)$" "$1es")
-    (rule #"(?i)(matr|vert|ind)(?:ix|ex)$" "$1ices")
+    (rule #"(?i)(matr|vert|ind|append)(?:ix|ex)$" "$1ices")
     (rule #"(?i)(buffal|tomat)o$" "$1oes")
     (rule #"(?i)(.*)as$" "$1ases")
     (rule #"(?i)([ti])um$" "$1a")
@@ -202,7 +211,7 @@ so if you add general rules, they can override more broad rules.
     (rule #"thieves" "thief")
     (rule #"(?i)([lr])ves$" "$1f")
     (rule #"(?i)(vert|ind)ices$" "$1ex")
-    (rule #"(?i)(matr)ices$" "$1ix")
+    (rule #"(?i)(matr|append)ices$" "$1ix")
     (rule #"(?i)(s)eries$" "$1eries")
     (rule #"(?i)([^aeiouy]|qu)ies$" "$1y")
     (rule #"(?i)(bus)es" "$1")

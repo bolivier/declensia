@@ -5,7 +5,8 @@
 
 (def cases
   "Either a word that won't change, or a vector pair [singular, plural]"
-  ["equipment"
+  ["aircraft"
+   "equipment"
    "fish"
    "information"
    "jeans"
@@ -84,7 +85,19 @@
    ["woman" "women"]
    ["zombie" "zombies"]
    ['ability 'abilities]
-   [:ability :abilities]])
+   [:ability :abilities]
+   ;; extra unusual words
+   ["cactus" "cacti"]
+   ["fungus" "fungi"]
+   ["nucleus" "nuclei"]
+   ["syllabus" "syllabi"]
+   ["alumnus" "alumni"]
+   ["criterion" "criteria"]
+   ["phenomenon" "phenomena"]
+   ["appendix" "appendices"]
+   ["index" "indices"]
+   ["matrix" "matrices"]
+   ["thesis" "theses"]])
 
 (e/defexpect plural-singular-test
   (doseq [case cases]
@@ -103,8 +116,6 @@
     (sut/add-rule :singular :bad-type (sut/rule "hello" "hello"))
     (e/expect ":bad-type is not a known ruleset. This rule will not be used.\n"
               (str *out*)))
-
-
 
   (try
     (sut/add-rule :bad :uncountable (sut/rule "hello" "hello"))
