@@ -4,9 +4,8 @@
 (defn regexp? [x]
   (instance? java.util.regex.Pattern x))
 
-(defn rule [id target replacement]
-  {:id          id
-   :type        :rule
+(defn rule [target replacement]
+  {:type        :rule
    :target      target
    :replacement replacement})
 
@@ -33,15 +32,15 @@
                                       :rule   rule})))
                    (fn [rules] (update rules rule-type #(cons rule %))))))
 
-(add-rule :plural :irregular (rule ::octo "ox" "oxen"))
-(add-rule :singular :irregular (rule ::octo "oxen" "ox"))
-(add-rule :plural :irregular (rule ::octo "octopus" "octopi"))
-(add-rule :plural :irregular (rule ::person "person" "people"))
-(add-rule :singular :irregular (rule ::person "people" "person"))
-(add-rule :plural :irregular (rule ::children "child" "children"))
-(add-rule :singular :irregular (rule ::children "children" "child"))
-(add-rule :singular :irregular (rule ::mice #"(?i)(l|m)ice" "$1ouse"))
-(add-rule :plural :irregular (rule ::mice #"(?i)(l|m)ouse" "$1ice"))
+(add-rule :plural :irregular (rule "ox" "oxen"))
+(add-rule :singular :irregular (rule "oxen" "ox"))
+(add-rule :plural :irregular (rule "octopus" "octopi"))
+(add-rule :plural :irregular (rule "person" "people"))
+(add-rule :singular :irregular (rule "people" "person"))
+(add-rule :plural :irregular (rule "child" "children"))
+(add-rule :singular :irregular (rule "children" "child"))
+(add-rule :singular :irregular (rule #"(?i)(l|m)ice" "$1ouse"))
+(add-rule :plural :irregular (rule #"(?i)(l|m)ouse" "$1ice"))
 
 (defonce ^:dynamic *debug*
   false)
@@ -129,64 +128,62 @@
            "wine"
            "wood"
            "wool"]]
-  (add-rule :singular :uncountable (rule (keyword w) w w))
-  (add-rule :plural :uncountable (rule (keyword w) w w)))
+  (add-rule :singular :uncountable (rule w w))
+  (add-rule :plural :uncountable (rule w w)))
 
 (doseq
   [r
-   [(rule ::base #"$" "s")
+   [(rule #"$" "s")
     (rule
-      ::paren
       #"(?i)((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)(sis|ses)$"
       "$1ses")
-    (rule ::man #"(wom|m)an$" "$1en")
-    (rule ::life #"(.*)fe?$" "$1ves")
-    (rule ::xes #"(?i)(ax|test)is$" "$1es")
-    (rule ::es #"(?i)(x|ch|ss|sh)$" "$1es")
-    (rule ::ices #"(?i)(matr|vert|ind)(?:ix|ex)$" "$1ices")
-    (rule ::buffalo #"(?i)(buffal|tomat)o$" "$1oes")
-    (rule ::as #"(?i)(.*)as$" "$1ases")
-    (rule ::media #"(?i)([ti])um$" "$1a")
-    (rule ::vowels #"(?i)([^aeiouy]|qu)y$" "$1ies")
-    (rule ::query #"(?i)(quer)y$" "$1ies")
-    (rule ::us #"(?i)(.*)us$" "$1uses")
-    (rule ::octo #"(?i)(octop)us$" "$1i")
-    (rule ::crisis #"(?i)(cris|test)(is|es)$" "$1es")
-    (rule ::database #"(?i)(database)s" "$1")
-    (rule ::quiz #"(?i)(qui)z$" "$1zzes")]]
+    (rule #"(wom|m)an$" "$1en")
+    (rule #"(.*)fe?$" "$1ves")
+    (rule #"(?i)(ax|test)is$" "$1es")
+    (rule #"(?i)(x|ch|ss|sh)$" "$1es")
+    (rule #"(?i)(matr|vert|ind)(?:ix|ex)$" "$1ices")
+    (rule #"(?i)(buffal|tomat)o$" "$1oes")
+    (rule #"(?i)(.*)as$" "$1ases")
+    (rule #"(?i)([ti])um$" "$1a")
+    (rule #"(?i)([^aeiouy]|qu)y$" "$1ies")
+    (rule #"(?i)(quer)y$" "$1ies")
+    (rule #"(?i)(.*)us$" "$1uses")
+    (rule #"(?i)(octop)us$" "$1i")
+    (rule #"(?i)(cris|test)(is|es)$" "$1es")
+    (rule #"(?i)(database)s" "$1")
+    (rule #"(?i)(qui)z$" "$1zzes")]]
   (add-rule :plural r))
 
 (doseq
   [r
-   [(rule ::base #"s$" "")
-    (rule ::life #"(?i)([^f])ves$" "$1fe")
-    (rule ::hive #"(?i)(hive)s$" "$1")
-    (rule ::persp #"(?i)(tive)s$" "$1")
-    (rule ::thief #"thieves" "thief")
-    (rule ::halves #"(?i)([lr])ves$" "$1f")
-    (rule ::vertex #"(?i)(vert|ind)ices$" "$1ex")
-    (rule ::matrix #"(?i)(matr)ices$" "$1ix")
-    (rule nil #"(?i)(s)eries$" "$1eries")
-    (rule ::vowels #"(?i)([^aeiouy]|qu)ies$" "$1y")
-    (rule ::bus #"(?i)(bus)es" "$1")
-    (rule ::man #"(wom|m)en$" "$1an")
-    (rule ::media #"(?i)([ti])a$" "$1um")
-    (rule ::alias #"(?i)(alias)es$" "$1")
-    (rule ::buffalo #"(?i)(o)es$" "$1")
-    (rule ::series #"(?i)(quer)ies$" "$1y")
-    (rule ::shoes #"shoes" "shoe")
-    (rule :es #"(?i)(x|ch|ss|sh)es$" "$1")
-    (rule ::xes #"^(a)x[ie]s$" "$1xis")
-    (rule nil #"(?i)(m)ovies$" "$1ovie")
-    (rule ::octo #"(?i)(octop|stat|vir)(us|i|uses)$" "$1us")
-    (rule ::crisis #"(?i)(cris|test)(is|es)$" "$1is")
-    (rule ::zombie "zombies" "zombie")
+   [(rule #"s$" "")
+    (rule #"(?i)([^f])ves$" "$1fe")
+    (rule #"(?i)(hive)s$" "$1")
+    (rule #"(?i)(tive)s$" "$1")
+    (rule #"thieves" "thief")
+    (rule #"(?i)([lr])ves$" "$1f")
+    (rule #"(?i)(vert|ind)ices$" "$1ex")
+    (rule #"(?i)(matr)ices$" "$1ix")
+    (rule #"(?i)(s)eries$" "$1eries")
+    (rule #"(?i)([^aeiouy]|qu)ies$" "$1y")
+    (rule #"(?i)(bus)es" "$1")
+    (rule #"(wom|m)en$" "$1an")
+    (rule #"(?i)([ti])a$" "$1um")
+    (rule #"(?i)(alias)es$" "$1")
+    (rule #"(?i)(o)es$" "$1")
+    (rule #"(?i)(quer)ies$" "$1y")
+    (rule #"shoes" "shoe")
+    (rule #"(?i)(x|ch|ss|sh)es$" "$1")
+    (rule #"^(a)x[ie]s$" "$1xis")
+    (rule #"(?i)(m)ovies$" "$1ovie")
+    (rule #"(?i)(octop|stat|vir)(us|i|uses)$" "$1us")
+    (rule #"(?i)(cris|test)(is|es)$" "$1is")
+    (rule "zombies" "zombie")
     (rule
-      ::paren
       #"(?i)((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)(sis|ses)$"
       "$1sis")
-    (rule ::database #"(?i)(database)s" "$1")
-    (rule ::quiz #"(?i)(quiz)zes$" "$1")]]
+    (rule #"(?i)(database)s" "$1")
+    (rule #"(?i)(quiz)zes$" "$1")]]
   (add-rule :singular r))
 
 (defmulti pluralize
